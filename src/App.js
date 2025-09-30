@@ -1,990 +1,875 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import {
-  Stethoscope, GraduationCap, Clock, Phone, MapPin, CheckCircle,
-  Users, Baby, HeartPulse, ShieldCheck, TrendingUp, HeartHandshake, Mail, Calendar, X, Youtube
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  CalendarCheck, Phone, MessageCircle, Stethoscope, HeartHandshake, Award, Clock, Menu, X, User, Zap, MapPin, 
+  SquareDot, ArrowRight, ShieldCheck, Play, ArrowLeft // ArrowLeft included for carousel navigation
 } from 'lucide-react';
 
-// --- Configuration and Data (Color Theory: Light Blue/White for Trust/Purity) ---
+// Load Tailwind CSS configuration
+// NOTE: Assuming Tailwind CSS is available in the environment
 
-const PRIMARY_COLOR = '#0D6EFD'; // Strong, professional Blue
-const ACCENT_COLOR = '#28A745'; // Vitality, Health Green
-const NEUTRAL_LIGHT_BG = '#F0F8FF'; // Very light background blue
+// --- MOCK DATA / CONFIGURATION ---
+const navItems = ['About', 'Services', 'Video-T', 'Contact'];
 
-// Placeholder Assets 
-const ASSETS = {
-    // Note: Doctor image placeholder updated to reflect the style in the screenshot (doctor with stethoscope)
-    DOCTOR_IMAGE: `https://images.unsplash.com/photo-1550186196-805177e68407?q=80&w=1500&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D`,
-    // Clinic image placeholders remain consistent with the professional theme
-    CHEMBUR_CLINIC_IMAGE: `https://placehold.co/600x400/${NEUTRAL_LIGHT_BG.substring(1)}/${PRIMARY_COLOR.substring(1)}?text=Jayraj+Clinic%0AProfessional+Facade`,
-    GOVANDI_CLINIC_IMAGE: `https://placehold.co/600x400/${NEUTRAL_LIGHT_BG.substring(1)}/${PRIMARY_COLOR.substring(1)}?text=Asha+Nursing+Home%0AInterior+View`,
-    VIDEO_ID_1: 'dQw4w9WgXcQ', // Placeholder YouTube ID
-    VIDEO_ID_2: 'F9v9_n25Hh8', // Placeholder YouTube ID
-};
-
-
-// Define data for the page (Text Curated)
 const services = [
-  { title: "Precision Vaccination & Immunisation", description: "Beyond routine shots: personalized, evidence-based catch-up schedules ensuring maximum protection for your child's future.", icon: ShieldCheck },
-  { title: "Specialized NICU Care", description: "Expert management and intensive care for premature babies, critically ill newborns, and high-risk deliveries.", icon: Baby },
-  { title: "Pediatric Critical Care (PICU)", description: "Dedicated pediatric intensive care for complex illnesses and post-operative recovery, focusing on stability and rapid healing.", icon: HeartPulse },
-  { title: "Adolescent Health & Wellness", description: "Confidential and comprehensive care addressing puberty, nutrition, mental health, and complex developmental milestones (10-18 yrs).", icon: TrendingUp },
-  { title: "Holistic Growth & Development Tracking", description: "Detailed, milestone-by-milestone assessments and personalized nutrition plans that fuel potential from infancy to adolescence.", icon: Users },
-  { title: "Evidence-Based Breastfeeding Support", description: "Practical, one-on-one counselling to help mothers overcome feeding challenges and establish successful, nourishing routines.", icon: HeartHandshake },
-  { title: "General Child Health (OPD)", description: "Proactive management of common illnesses, regular wellness checks, and timely intervention for acute paediatric conditions.", icon: Stethoscope },
+  { icon: Stethoscope, title: 'Well-Child Visits', description: 'Comprehensive developmental checks, growth monitoring, and preventative health discussions for all ages.' },
+  { icon: Zap, title: 'Pediatric Emergency Care', description: 'Immediate, expert handling of acute illnesses, high fever, injuries, and urgent pediatric conditions.' },
+  { icon: HeartHandshake, title: 'Neonatal Care (NICU)', description: 'Dedicated and compassionate care for premature newborns, low birth weight babies, and high-risk deliveries.' },
+  { icon: Award, title: 'Childhood Vaccinations', 'description': 'Personalized and up-to-date immunization schedules following national and international guidelines.' },
+];
+
+const videoTestimonials = [
+  // UPDATED with real YouTube Short IDs
+  { title: 'Newborn Care Review', youtubeId: 'JXAYD_-lre8', duration: '1:45' },
+  { title: 'Emergency Service Feedback', youtubeId: 'Tv0qw-ejVw0', duration: '3:05' },
+  { title: 'Long-Term Patient Success', youtubeId: 'ffXrVT46GCY', duration: '2:10' },
+  { title: 'Routine Checkup Experience', youtubeId: 'DnMU0HDjGNM', duration: '1:55' },
+  // ADDED the fifth video to the array
+  { title: 'Vaccination Advice', youtubeId: '9pJv0Tzov7c', duration: '1:10' },
 ];
 
 const clinics = [
-  {
-    name: "Jayraj Clinic — Chembur",
-    image: ASSETS.CHEMBUR_CLINIC_IMAGE,
-    timings: [
-      { day: "Morning", time: "10:30 AM – 1:00 PM" },
-      { day: "Evening", time: "7:00 PM – 9:30 PM" },
-    ],
-    mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15082.930432320794!2d72.8808569!3d19.07598!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c6306644edc1%3A0x5da4ed8f8d648c69!2sChembur%2C%20Mumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1678890000000&zoom=14",
+  { 
+    name: 'Jayraj Clinic - Chembur', 
+    address: 'Plot No. 29, L-373, Galsenkar Colony, Near Jafar School, Govandi, Mumbai - 400043', 
+    morning: '10:30 AM - 1:00 PM', 
+    evening: '7:00 PM - 9:30 PM',
+    imageUrl: 'https://lh3.googleusercontent.com/p/AF1QipPY7W12UT2ZZwVmq6nREyQxKpx6WaP4aXwkg5xW=s1360-w1360-h1020-rw'
   },
-  {
-    name: "Asha Nursing Home — Govandi",
-    image: ASSETS.GOVANDI_CLINIC_IMAGE,
-    timings: [
-      { day: "Afternoon", time: "1:00 PM – 3:00 PM" },
-      { day: "Evening", time: "4:00 PM – 7:00 PM" },
-    ],
-    address: "Plot No. 29 – L – 2/3, Gajanan Colony, Near Jafari School, Govandi, Mumbai – 400043",
-    mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15084.286940861113!2d72.90382375!3d19.05739675!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c3905e94b155%3A0x5d988880e6c694a1!2sGovandi%2C%20Mumbai%2C%20Maharashtra%20400043!5e0!3m2!1sen!2sin!4v1678890000000&zoom=14",
-  }
+  { 
+    name: 'Asha Nursing Home - Govandi', 
+    address: 'Interior View, 1st Floor, Next to XYZ Bank, Govandi East, Mumbai - 400088', 
+    morning: '1:00 PM - 3:00 PM', 
+    evening: '4:00 PM - 7:00 PM',
+    imageUrl: 'https://lh3.googleusercontent.com/p/AF1QipPyLt53PQ_zLaTROH5uMdB3aoONnuPa6F0dg8A=w1200-h969-p-k-no'
+  },
 ];
 
-// Achievements for the Hero Section Stats
-const achievements = [
-    { title: "Years Experience", value: 8, suffix: '+' },
-    { title: "FNNF Certified", value: 100, suffix: '%' },
-    { title: "PGPN Boston", value: 1, suffix: 'st' },
-    { title: "Emergency Care", value: 24, suffix: '/7' },
-];
+// --- REUSABLE COMPONENTS & LOGIC ---
 
-// --- Custom Hooks for UI/Animation ---
-
-// Hook for scroll-based fade-in effect (Enhanced for better initial transition)
-const useInView = (options) => {
-  const ref = useRef(null);
-  useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
-
-    // Apply initial hidden state using style attribute
-    element.style.opacity = '0';
-    element.style.transform = 'translateY(20px)';
-    element.style.transition = 'opacity 700ms ease-out, transform 700ms ease-out';
-    element.style.transitionDelay = `${(Math.random() * 200).toFixed(0)}ms`; // Staggered delay for elements
-
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        entry.target.style.opacity = '1';
-        entry.target.style.transform = 'translateY(0)';
-        observer.unobserve(entry.target);
-      }
-    }, options);
-
-    observer.observe(element);
-
-    return () => {
-      if (element) observer.unobserve(element);
-    };
-  }, [options]);
-  return ref;
+// Utility function to handle smooth scrolling
+const useScrollHandler = () => {
+  const handleScrollTo = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+  return handleScrollTo;
 };
 
-// Hook for numerical counter animation
-const useCounter = (target, duration = 1500) => {
+// Animated Counter Component
+const AnimatedCounter = ({ endValue, duration = 2000 }) => {
   const [count, setCount] = useState(0);
-  const ref = useRef(null);
+  const numericEndValue = parseInt(endValue.toString().replace(/[^0-9.]/g, ''), 10);
+  const isPlus = endValue.toString().includes('+');
+  const isPercent = endValue.toString().includes('%');
 
   useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
+    let startTime;
+    let frameId;
 
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        let start = 0;
-        const startTime = performance.now();
-        const step = (currentTime) => {
-          const progress = Math.min(1, (currentTime - startTime) / duration);
-          // Special handling for 24/7 stat which should just display 24
-          let currentTarget = target === 24 ? 24 : target;
-          setCount(Math.floor(progress * currentTarget));
-          if (progress < 1) {
-            requestAnimationFrame(step);
-          }
-        };
-        requestAnimationFrame(step);
-        observer.unobserve(element);
+    const animate = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+      const percentage = Math.min(progress / duration, 1);
+      const nextValue = Math.floor(numericEndValue * percentage);
+      setCount(nextValue);
+
+      if (percentage < 1) {
+        frameId = requestAnimationFrame(animate);
       }
-    }, { threshold: 0.8 });
-
-    observer.observe(element);
-    return () => {
-      if (element) observer.unobserve(element);
     };
-  }, [target, duration]);
 
-  return [count, ref];
-};
+    frameId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frameId);
+  }, [numericEndValue, duration]);
 
-// --- Helper Components ---
-
-const NavLink = ({ children, sectionId, activeSection, scrollToSection }) => {
-  const isActive = activeSection === sectionId;
   return (
-    <a
-      href={`#${sectionId}`}
-      onClick={(e) => { e.preventDefault(); scrollToSection(sectionId); }}
-      className={`relative py-2 px-3 text-sm font-medium transition-colors duration-300 hover:text-[${PRIMARY_COLOR}] group
-        ${isActive ? `text-[${PRIMARY_COLOR}] font-bold` : 'text-gray-700'}
-      `}
-    >
-      {children}
-      <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[3px] w-0 bg-[${PRIMARY_COLOR}] transition-all duration-300 ${isActive ? 'w-full' : 'group-hover:w-1/2'}`}></span>
-    </a>
+    <p className="text-4xl lg:text-5xl font-extrabold font-rubik bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-cyan-500">
+      {count.toLocaleString()}
+      {isPercent ? '%' : ''}
+      {isPlus && !isPercent ? '+' : ''}
+    </p>
   );
 };
 
-const SectionTitle = ({ children, subtitle }) => {
-  const ref = useInView({ threshold: 0.1 });
+// Stat Card Component
+const StatCard = ({ value, label, icon: Icon }) => {
+  const [hasCounted, setHasCounted] = useState(false);
+  const statRef = useRef(null);
+  
+  const numericPart = value.toString().replace(/[^0-9.]/g, '');
+  const isStaticValue = numericPart.length === 0;
+
+  useEffect(() => {
+    if (isStaticValue) {
+        setHasCounted(true);
+        return;
+    }
+
+    if (hasCounted) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasCounted(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.5,
+      }
+    );
+
+    if (statRef.current) {
+      observer.observe(statRef.current);
+    }
+
+    return () => {
+      if (statRef.current) {
+        observer.unobserve(statRef.current);
+      }
+    };
+  }, [hasCounted, isStaticValue]);
+
+  const defaultDisplay = value.toString().includes('%') ? '0%' : '0+';
+  const displayValue = isStaticValue ? value : defaultDisplay;
+
   return (
-    <div ref={ref} className="text-center mb-12">
-      <h2 className="text-4xl font-extrabold text-slate-900 mb-3 md:text-5xl font-['Montserrat']">
-        {children}
-      </h2>
-      <p className="text-lg text-gray-500 max-w-2xl mx-auto">{subtitle}</p>
+    <div ref={statRef} className="stat-card flex flex-col items-center justify-center p-4 md:p-6 bg-white/50 backdrop-blur-md rounded-2xl shadow-3xl transition duration-500 hover:shadow-4xl hover:bg-white/90 border border-white/70 transform hover:scale-[1.03]">
+      {Icon && <Icon className="w-8 h-8 text-blue-700 mb-2" />}
+      
+      <div className="h-10 flex items-center">
+        {hasCounted && !isStaticValue ? (
+          <AnimatedCounter endValue={value} />
+        ) : (
+          <p className="text-4xl lg:text-5xl font-extrabold font-rubik bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-cyan-500">
+            {isStaticValue ? value : displayValue}
+          </p>
+        )}
+      </div>
+      <p className="text-sm font-medium text-gray-700 text-center mt-1">{label}</p>
     </div>
   );
 };
 
-const CTAButton = ({ icon: Icon, children, style = 'primary', onClick, isLink = false, href = "#" }) => {
-  const baseClasses = "flex items-center justify-center space-x-2 px-6 py-3 font-semibold rounded-xl transition-all duration-300 transform shadow-lg hover:shadow-xl text-center min-w-[120px]";
-  let colorClasses = '';
+// Primary Button Component
+const PrimaryButton = ({ icon: Icon, label, className = '', onClick, disabled = false }) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    className={`
+      flex items-center justify-center space-x-2 px-8 py-3 font-semibold text-white
+      bg-gradient-to-r from-blue-600 to-cyan-500 rounded-full shadow-xl shadow-blue-500/50
+      transition duration-300 transform group
+      ${className}
+      ${disabled ? 'opacity-60 cursor-not-allowed' : 'hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98]'}
+    `}
+  >
+    {Icon && <Icon className="w-5 h-5 transition duration-300 group-hover:translate-x-1" />}
+    <span>{label}</span>
+  </button>
+);
 
-  if (style === 'primary') {
-    colorClasses = `bg-[${PRIMARY_COLOR}] text-white hover:bg-opacity-90 active:scale-[0.98]`;
-  } else if (style === 'secondary') {
-    colorClasses = `bg-white text-[${PRIMARY_COLOR}] border border-gray-200 hover:bg-gray-50 active:scale-[0.98]`;
-  } else if (style === 'whatsapp') {
-    colorClasses = `bg-[#25D366] text-white hover:bg-opacity-90 active:scale-[0.98]`;
-  } else if (style === 'accent') {
-    colorClasses = `bg-[${ACCENT_COLOR}] text-white hover:bg-opacity-90 active:scale-[0.98]`;
-  }
+// Secondary Button Component
+const SecondaryButton = ({ icon: Icon, label, className = '', onClick }) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center justify-center space-x-2 px-8 py-3 font-semibold text-blue-600 bg-white/90 rounded-full border border-blue-300 transition duration-300 hover:bg-blue-50 hover:text-blue-700 shadow-md transform hover:scale-[1.01] ${className}`}
+  >
+    {Icon && <Icon className="w-5 h-5" />}
+    <span>{label}</span>
+  </button>
+);
 
-  const Tag = isLink ? 'a' : 'button';
-
-  return (
-    <Tag 
-        onClick={isLink ? undefined : onClick} // Only use onClick for buttons
-        href={isLink ? href : undefined} // Only use href for links
-        target={isLink && href.startsWith('http') ? '_blank' : undefined}
-        rel={isLink && href.startsWith('http') ? 'noopener noreferrer' : undefined}
-        className={`${baseClasses} ${colorClasses}`}
-    >
-      {Icon && <Icon className="w-5 h-5" />}
-      <span>{children}</span>
-    </Tag>
-  );
-};
-
-// --- Main Components ---
-
-const Header = ({ activeSection, scrollToSection }) => {
-  const [isSticky, setIsSticky] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const navItems = [
-    { id: 'about', name: 'About' },
-    { id: 'services', name: 'Services' },
-    { id: 'testimonials', name: 'Testimonials' },
-    { id: 'contact', name: 'Contact' },
-  ];
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsSticky(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 shadow-md font-['Montserrat']
-      ${isSticky ? `py-3 bg-white` : 'py-5 bg-white/90 backdrop-blur-sm'}
-    `}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-        <h1 className={`text-2xl font-bold text-[${PRIMARY_COLOR}] transition-all duration-300`}>
-          <a href="#hero" onClick={(e) => { e.preventDefault(); scrollToSection('hero'); }}>
-            Dr. Jay R. Dhadke
-          </a>
-        </h1>
-
-        <nav className="hidden md:flex space-x-6">
-          {navItems.map(item => (
-            <NavLink
-              key={item.id}
-              sectionId={item.id}
-              activeSection={activeSection}
-              scrollToSection={scrollToSection}
-            >
-              {item.name}
-            </NavLink>
-          ))}
-        </nav>
-
-        {/* Mobile Menu Button */}
-        <button
-          className={`md:hidden p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[${PRIMARY_COLOR}] text-gray-800`}
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <X className="w-6 h-6" /> : (
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-            </svg>
-          )}
-        </button>
-      </div>
-
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className={`md:hidden bg-white pt-4 pb-2 transition-all duration-300 ease-in-out border-t border-gray-100`}>
-          <nav className="flex flex-col space-y-2 px-4">
-            {navItems.map(item => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                onClick={(e) => { e.preventDefault(); scrollToSection(item.id); setIsOpen(false); }}
-                className={`py-2 px-3 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-300
-                  ${activeSection === item.id ? `font-bold text-[${PRIMARY_COLOR}] bg-gray-50` : ''}
-                `}
-              >
-                {item.name}
-              </a>
-            ))}
-          </nav>
-        </div>
-      )}
-    </header>
-  );
-};
-
-const StatCard = ({ title, value, suffix, counterHook }) => {
-    const [count, ref] = counterHook;
+// Clinic Timing Display Component
+const ClinicCard = ({ clinic }) => (
+  <div className="p-6 bg-white/10 backdrop-blur-xl rounded-3xl shadow-3xl transition duration-500 hover:shadow-4xl border border-white/30 flex flex-col h-full text-white transform hover:scale-[1.01]">
     
-    // Custom logic for 24/7 display
-    const displayValue = title === "Emergency Care" ? '24' : count;
-    const displaySuffix = title === "Emergency Care" ? suffix : (count === 0 ? '' : suffix);
+    <img
+      src={clinic.imageUrl}
+      alt={`${clinic.name} interior view`}
+      className="w-full h-40 object-cover rounded-2xl mb-5 shadow-lg border-4 border-white/50"
+      loading="lazy"
+    />
 
-    return (
-        <div ref={ref} className="stat-card p-4 md:p-6 bg-white/80 rounded-2xl shadow-lg border border-gray-100 text-center transition-all duration-300 hover:shadow-xl backdrop-blur-md">
-            <p className="text-4xl md:text-5xl font-extrabold text-slate-900 font-['Poppins']">
-                <span className={`text-[${PRIMARY_COLOR}]`}>{displayValue}</span>
-                <span className="text-2xl font-bold align-top">{displaySuffix}</span>
-            </p>
-            <p className="text-sm md:text-md text-gray-600 font-semibold mt-1">{title}</p>
-        </div>
-    );
-}
+    <h3 className="text-xl font-extrabold font-rubik mb-2 flex items-center">
+      <MapPin className="w-5 h-5 text-red-400 mr-2" />
+      {clinic.name}
+    </h3>
+    <p className="text-sm text-gray-200 mb-4">{clinic.address}</p>
 
-
-const HeroSection = ({ openModal, scrollToSection }) => {
-  const ref = useInView({ threshold: 0.1 });
-  
-  // Use hooks for the counter animations
-  const yearsCounter = useCounter(achievements[0].value);
-  const percentCounter = useCounter(achievements[1].value);
-  const pgpnCounter = useCounter(achievements[2].value);
-  const emergencyCounter = useCounter(achievements[3].value);
-
-  const counterHooks = [yearsCounter, percentCounter, pgpnCounter, emergencyCounter];
-
-
-  return (
-    <section id="hero" className="bg-white pt-32 pb-16 md:pt-40 md:pb-24 relative overflow-hidden hero-soft-bg min-h-[85vh]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 relative text-center">
-        
-        {/* Credentials and Tagline (Matching Screenshot Layout) */}
-        <div ref={ref} className="max-w-4xl mx-auto">
-          <p className="text-xl md:text-2xl mb-2 font-medium text-gray-700">
-            MD Paediatrics, FNNF, MNNF (Neonatology, Mumbai)
-            <br className="sm:hidden"/> MBBS (K.E.M. Hospital, Mumbai), PGPN (Boston, USA)
-          </p>
-          
-          <h1 className="text-5xl md:text-6xl font-extrabold mb-4 leading-tight font-['Poppins'] text-slate-900">
-            Dr. Jay R. Dhadke
-          </h1>
-          
-          <h2 className={`text-3xl md:text-4xl font-bold mb-8 text-[${PRIMARY_COLOR}] tracking-tight`}>
-            Pediatrician | NICU & PICU Child Specialist
-          </h2>
-          
-          <p className="text-lg md:text-xl mb-12 font-light text-gray-600 max-w-3xl mx-auto">
-            Compassionate, **Evidence-based Care** for Newborns & Children. Your child's health is our commitment.
-          </p>
-          
-          {/* CTA Buttons (Matching Screenshot Layout) */}
-          <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-16">
-            <CTAButton icon={Calendar} style="primary" onClick={openModal}>
-              Book Appointment
-            </CTAButton>
-            {/* FIX: Removed external <a> tags to prevent nesting error: <a><a> */}
-            <CTAButton icon={Phone} style="secondary" isLink={true} href="tel:+918692072736">
-                Call Now
-            </CTAButton>
-            <CTAButton icon={Stethoscope} style="whatsapp" isLink={true} href="https://wa.me/918692072736">
-                WhatsApp
-            </CTAButton>
-          </div>
-        </div>
-
-        {/* Stat Cards Section (Matching Screenshot) */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto -mb-12">
-            {achievements.map((item, index) => (
-                <StatCard 
-                    key={index}
-                    title={item.title}
-                    value={item.value}
-                    suffix={item.suffix}
-                    counterHook={counterHooks[index]}
-                />
-            ))}
-        </div>
-
-        {/* Doctor Image Placeholder (Integrated into the background style) */}
-        <div className="max-w-4xl mx-auto mt-16 md:mt-24">
-            <div className="w-full h-[300px] md:h-[450px] relative rounded-3xl overflow-hidden shadow-2xl doctor-image-placeholder">
-                <img 
-                    src={ASSETS.DOCTOR_IMAGE} 
-                    alt="Dr. Jay R. Dhadke - Pediatrician & Neonatologist" 
-                    className="w-full h-full object-cover object-top filter contrast-125 transition-all duration-700" 
-                    loading="lazy"
-                    onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/1200x500/E0F7FF/0D6EFD?text=Dr.+Dhadke%0APortrait+Image"; }}
-                />
-                 {/* Emergency Care Badge (Matches Screenshot) */}
-                <div className="absolute right-6 bottom-6 p-4 rounded-xl shadow-2xl bg-[${PRIMARY_COLOR}] text-white font-bold text-xl flex flex-col items-center justify-center transition-all duration-300 hover:scale-[1.05] w-28 h-28">
-                    <span>24/7</span>
-                    <span className="text-sm font-medium opacity-80 mt-1">Emergency Care</span>
-                </div>
-            </div>
-        </div>
-
-
+    <div className="flex flex-col space-y-3 mt-auto pt-4 border-t border-white/30">
+      <div className="flex items-center justify-between">
+        <span className="flex items-center font-medium">
+          <Clock className="w-4 h-4 mr-2 text-blue-200" /> Morning Timings:
+        </span>
+        <span className="font-semibold text-blue-100">{clinic.morning}</span>
       </div>
-    </section>
-  );
-};
-
-const AboutSection = () => {
-  
-  const bioRef = useInView({ threshold: 0.1 });
-  const highlightsRef = useInView({ threshold: 0.1 });
-
-  return (
-    <section id="about" className="py-20 md:py-32 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Title matches the style in the screenshot */}
-        <SectionTitle subtitle="Dedicated to providing compassionate, evidence-based pediatric and neonatal care">
-            About Dr. Jay R. Dhadke
-        </SectionTitle>
-
-        <div className="grid md:grid-cols-2 gap-12 items-start">
-          
-          <div ref={bioRef} className="space-y-6 text-lg text-gray-700">
-            <p className="font-['Inter']">
-              Dr. Jay R. Dhadke is a highly dedicated Pediatrician and Neonatologist serving the Mumbai community, bringing **over eight years of specialized experience** to his practice. His foundational training includes an **MBBS from the prestigious K.E.M. Hospital, Mumbai**, followed by an MD in Paediatrics.
-            </p>
-            <p className="font-['Inter']">
-              His commitment to the most vulnerable patients led him to complete a **Fellowship in Neonatology (FNNF, MNNF)** at Sion Lokmanya Tilak Municipal Medical College & Hospital, Mumbai. Furthermore, he cemented his expertise in child nutrition by earning the **Post Graduate Program in Paediatric Nutrition (PGPN) from Boston, USA**, ensuring a holistic approach to child wellness.
-            </p>
-            <p className={`font-semibold text-slate-800 font-['Inter'] border-l-4 border-[${ACCENT_COLOR}] pl-4 italic bg-white p-3 rounded-lg`}>
-              After serving as a Postgraduate Medical Officer at Shatabdi Hospital, Dr. Dhadke established his own centers. He currently offers comprehensive, high-quality care at **Jayraj Clinic (Chembur)** and **Asha Nursing Home (Govandi)**.
-            </p>
-          </div>
-          
-          {/* Detailed Credentials List */}
-          <div ref={highlightsRef} className="p-8 rounded-2xl shadow-2xl bg-white border border-gray-100 h-full space-y-4">
-            <h3 className={`text-xl font-bold text-[${PRIMARY_COLOR}] mb-4 flex items-center`}>
-                <GraduationCap className='w-6 h-6 mr-3 text-gray-600' /> Professional Credentials
-            </h3>
-            <ul className="space-y-3 text-gray-700">
-                <li className="flex items-start">
-                    <CheckCircle className={`w-5 h-5 mt-1 mr-3 flex-shrink-0 text-[${ACCENT_COLOR}]`} />
-                    <span className='font-medium'>**MD Paediatrics:** Comprehensive specialization in child health.</span>
-                </li>
-                <li className="flex items-start">
-                    <CheckCircle className={`w-5 h-5 mt-1 mr-3 flex-shrink-0 text-[${ACCENT_COLOR}]`} />
-                    <span className='font-medium'>**FNNF, MNNF:** Fellowship and Membership in Neonatology (Sion Hospital, Mumbai).</span>
-                </li>
-                <li className="flex items-start">
-                    <CheckCircle className={`w-5 h-5 mt-1 mr-3 flex-shrink-0 text-[${ACCENT_COLOR}]`} />
-                    <span className='font-medium'>**PGPN (Boston, USA):** Specialized training in Pediatric Nutrition.</span>
-                </li>
-                <li className="flex items-start">
-                    <CheckCircle className={`w-5 h-5 mt-1 mr-3 flex-shrink-0 text-[${ACCENT_COLOR}]`} />
-                    <span className='font-medium'>**MBBS (K.E.M. Hospital, Mumbai):** Strong academic foundation from a top institution.</span>
-                </li>
-                <li className="flex items-start">
-                    <CheckCircle className={`w-5 h-5 mt-1 mr-3 flex-shrink-0 text-[${ACCENT_COLOR}]`} />
-                    <span className='font-medium'>**Expertise in PICU:** Dedicated Pediatric Intensive Care Unit management.</span>
-                </li>
-            </ul>
-          </div>
-
-        </div>
+      <div className="flex items-center justify-between">
+        <span className="flex items-center font-medium">
+          <Clock className="w-4 h-4 mr-2 text-blue-200" /> Evening Timings:
+        </span>
+        <span className="font-semibold text-blue-100">{clinic.evening}</span>
       </div>
-    </section>
-  );
-};
+    </div>
+    <p className="mt-4 p-2 bg-yellow-50 text-yellow-800 font-bold text-sm text-center rounded-lg border border-yellow-300">
+      **Strictly by Appointment Only**
+    </p>
+  </div>
+);
 
-const ServiceCard = ({ service }) => {
-    const ref = useInView({ threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-    return (
-        <div
-            ref={ref}
-            className={`p-6 bg-white rounded-xl shadow-lg border-t-4 border-[${PRIMARY_COLOR}] 
-              transition-all duration-500 ease-in-out 
-              hover:shadow-2xl hover:translate-y-[-8px] hover:scale-[1.02]
-              transform origin-center`}
-        >
-            <service.icon className={`w-10 h-10 text-white p-2 rounded-lg mb-4 bg-[${ACCENT_COLOR}]`} />
-            <h3 className="text-xl font-bold text-slate-900 mb-2 font-['Poppins']">{service.title}</h3>
-            <p className="text-gray-600 font-['Inter']">{service.description}</p>
-        </div>
-    );
-}
-
-const ServicesSection = () => {
-  return (
-    <section id="services" className="py-20 md:py-32 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionTitle subtitle="From Newborn Care to Adolescent Wellness: Our Core Areas of Expertise">Signature Services</SectionTitle>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service, index) => (
-            <ServiceCard key={index} service={service} />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const VideoTestimonialCard = ({ videoId, title, patient }) => {
-    const ref = useInView({ threshold: 0.1 });
-    return (
-        <div ref={ref} className="bg-gray-50 rounded-xl shadow-2xl p-4 transition-all duration-500 hover:shadow-3xl hover:translate-y-[-4px] border border-gray-100 transform hover:scale-[1.01]">
-            <div className="aspect-video mb-4 rounded-lg overflow-hidden relative">
-                <iframe
-                    className="w-full h-full"
-                    src={`https://www.youtube.com/embed/${videoId}?rel=0`}
-                    title={title}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    loading="lazy"
-                ></iframe>
-            </div>
-            <h3 className="text-xl font-semibold text-slate-900 mb-1 flex items-center">
-                <Youtube className="w-5 h-5 mr-2 text-red-600" /> {title}
-            </h3>
-            <p className="text-gray-600 text-sm italic">— {patient}</p>
-        </div>
-    );
-}
-
-const TestimonialsSection = () => {
-  return (
-    <section id="testimonials" className="py-20 md:py-32 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionTitle subtitle="See and Hear directly from the families we’ve helped heal and grow">Video Testimonials</SectionTitle>
-
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <VideoTestimonialCard 
-                videoId={ASSETS.VIDEO_ID_1} 
-                title="A Mother's Gratitude: Quick Recovery Story" 
-                patient="Priya S." 
-            />
-            <VideoTestimonialCard 
-                videoId={ASSETS.VIDEO_ID_2} 
-                title="NICU Success: Caring for Our Premature Baby" 
-                patient="The Sharma Family" 
-            />
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const AppointmentModal = ({ isOpen, closeModal }) => {
-  const [form, setForm] = useState({ name: '', phone: '', email: '', reason: '' });
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [error, setError] = useState('');
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const validate = () => {
-    if (!form.name || !form.phone || !form.reason) {
-      setError('Please fill in Name, Phone, and Reason for Visit.');
-      return false;
-    }
-    const phoneRegex = /^\+?(\d[\d\s-]{8,}\d)$/; // Basic international/local phone regex
-    if (!phoneRegex.test(form.phone)) {
-      setError('Please enter a valid phone number.');
-      return false;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (form.email && !emailRegex.test(form.email)) {
-      setError('Please enter a valid email address.');
-      return false;
-    }
-    setError('');
-    return true;
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validate()) {
-      const whatsappText = `Hello Dr. Dhadke's Clinic,\n\n*APPOINTMENT REQUEST*\nName: ${form.name}\nPhone: ${form.phone}\nReason: ${form.reason}${form.email ? `\nEmail: ${form.email}` : ''}\n\nI request confirmation for the earliest availability.`;
-      const encodedText = encodeURIComponent(whatsappText);
-      const whatsappUrl = `https://wa.me/918692072736?text=${encodedText}`; 
-      
-      setIsSubmitted(true);
-      window.open(whatsappUrl, '_blank'); 
-      
-      setTimeout(() => {
-        closeModal();
-        setForm({ name: '', phone: '', email: '', reason: '' });
-        setIsSubmitted(false);
-      }, 3000);
-    }
-  };
-
+// Modal Component
+const AppointmentModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black bg-opacity-60 flex justify-center items-center p-4 backdrop-blur-sm" onClick={closeModal}>
-      {/* Retaining Glassmorphism on the Modal for a premium, clean look */}
-      <div className="glass-morphism-modal w-full max-w-lg p-6 md:p-8 shadow-2xl transform transition-all duration-300" onClick={e => e.stopPropagation()}>
-        <div className="flex justify-between items-start mb-4 border-b border-white/20 pb-3">
-          <h3 className={`text-2xl font-bold text-white flex items-center font-['Poppins']`}>
-            <Calendar className="w-6 h-6 mr-3 text-[${ACCENT_COLOR}]" /> Book Appointment
-          </h3>
-          <button onClick={closeModal} className="p-1 rounded-full text-white/70 hover:bg-white/10 hover:text-white transition-colors">
-            <X className="w-6 h-6" />
-          </button>
-        </div>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 transition-opacity duration-300 backdrop" onClick={onClose}>
+      <div
+        className="bg-white/80 backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-4xl max-w-lg w-full border border-white/50 relative transform scale-100 transition-transform duration-500"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 transition duration-150">
+          <X className="w-6 h-6" />
+        </button>
+        <h3 className="text-3xl font-extrabold font-rubik text-blue-800 mb-4">Book Your Consultation</h3>
+        <p className="text-gray-600 mb-6">Fill out the form below and we will confirm your slot within 2 hours.</p>
 
-        {isSubmitted ? (
-          <div className="text-center p-8">
-            <CheckCircle className={`w-16 h-16 mx-auto text-[${ACCENT_COLOR}] mb-4`} />
-            <h4 className="text-xl font-semibold mb-2 text-white">Request Sent! Please Check WhatsApp.</h4>
-            <p className="text-white/80">A new tab has opened to help you confirm the appointment details with the clinic team.</p>
+        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+          <div>
+            <label htmlFor="modal-name" className="block text-sm font-medium text-gray-700 mb-1">Child's Name</label>
+            <input type="text" id="modal-name" placeholder="Name" className="w-full p-3 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500 bg-white/70 transition duration-300" />
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <p className="text-sm text-center text-white/80 p-2 bg-white/10 rounded-lg backdrop-blur-sm">
-                We use WhatsApp for faster confirmation.
-            </p>
-            {error && <div className="p-3 bg-red-800 text-white rounded-lg text-sm">{error}</div>}
-
-            {['name', 'phone', 'email', 'reason'].map((field) => (
-              <div>
-                <label htmlFor={field} className="block text-sm font-medium text-white capitalize">
-                  {field.replace('phone', 'Phone Number')} {field !== 'email' && <span className="text-red-300">*</span>}
-                </label>
-                <input
-                  type={field === 'email' ? 'email' : field === 'phone' ? 'tel' : 'text'}
-                  id={field}
-                  name={field}
-                  value={form[field]}
-                  onChange={handleChange}
-                  placeholder={field === 'reason' ? 'Brief reason for visit (e.g., Fever, Vaccination)' : `Enter your ${field}`}
-                  required={field !== 'email'}
-                  className="mt-1 block w-full px-4 py-2 border border-white/30 rounded-lg shadow-sm focus:ring-white focus:border-white bg-white/20 text-white placeholder-white/50"
-                />
-              </div>
-            ))}
-            
-            <button
-              type="submit"
-              className={`w-full flex items-center justify-center space-x-2 px-6 py-3 font-semibold rounded-xl transition-all duration-300 transform shadow-lg bg-[${ACCENT_COLOR}] text-white hover:bg-opacity-90 active:scale-[0.98] mt-6`}
-            >
-              Confirm & Proceed to WhatsApp
-            </button>
-          </form>
-        )}
+          <div>
+            <label htmlFor="modal-phone" className="block text-sm font-medium text-gray-700 mb-1">Contact Phone</label>
+            <input type="tel" id="modal-phone" placeholder="+91 98765 43210" className="w-full p-3 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500 bg-white/70 transition duration-300" />
+          </div>
+          <div>
+            <label htmlFor="modal-reason" className="block text-sm font-medium text-gray-700 mb-1">Reason for Visit</label>
+            <textarea id="modal-reason" rows="3" placeholder="Briefly describe the concern..." className="w-full p-3 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500 bg-white/70 transition duration-300"></textarea>
+          </div>
+          <PrimaryButton icon={CalendarCheck} label="Confirm Appointment" className="w-full mt-6" onClick={() => {
+            console.log("Appointment submitted (placeholder)");
+            onClose();
+          }} />
+        </form>
       </div>
     </div>
   );
 };
 
-const ClinicTimingCard = ({ clinic }) => {
-  const ref = useInView({ threshold: 0.1 });
-  // Used glass-morphism-card class
-  return (
-    <div ref={ref} className="glass-morphism-card p-6 rounded-2xl shadow-lg border-t-4 border-[${ACCENT_COLOR}] transition-all duration-500 hover:shadow-2xl hover:translate-y-[-4px]">
-      <h3 className={`text-2xl font-bold mb-4 text-[${PRIMARY_COLOR}] font-['Poppins']`}>
-        {clinic.name}
-      </h3>
-      
-      {clinic.address && (
-        <p className="flex items-start text-gray-700 mb-4 text-sm">
-          <MapPin className="w-5 h-5 mr-2 mt-1 flex-shrink-0 text-gray-500" />
-          {clinic.address}
-        </p>
-      )}
+// --- SECTIONAL COMPONENTS ---
 
-      {/* Clinic Image Placeholder (Themed) */}
-      <img 
-          src={clinic.image} 
-          alt={`${clinic.name} Facade`} 
-          className="w-full h-auto object-cover rounded-lg mb-4 shadow-md transition-all duration-300 hover:scale-[1.01]" 
-          loading="lazy"
-          onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/600x200/F7FAFF/0D6EFD?text=Clinic+Image"; }}
-      />
-
-
-      <div className="space-y-3">
-        {clinic.timings.map((timing, index) => (
-          <div key={index} className="flex justify-between items-center p-3 rounded-lg bg-white/80 border border-gray-100 backdrop-blur-sm">
-            <span className="font-semibold text-gray-800 flex items-center">
-              <Clock className={`w-5 h-5 mr-2 text-[${ACCENT_COLOR}]`} />
-              {timing.day} Timings:
-            </span>
-            <span className="font-bold text-slate-900">{timing.time}</span>
-          </div>
-        ))}
-      </div>
-      
-      <p className="text-sm text-red-600 font-semibold mt-4 text-center p-2 rounded-lg bg-red-50/70 border border-red-100">
-        **Strictly by Appointment Only - Please Book Ahead**
-      </p>
-    </div>
-  );
-};
-
-const ContactSection = ({ openModal }) => {
-  const refGovandi = useInView({ threshold: 0.1 });
-  const refChembur = useInView({ threshold: 0.1 });
-
-  return (
-    <section id="contact" className="py-20 md:py-32 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionTitle subtitle="Direct Contact, Clinic Details, and Appointment Booking">Connect With Us</SectionTitle>
-
-        <div className="grid lg:grid-cols-3 gap-8 mb-16">
-          <div className="lg:col-span-2 space-y-8">
-            {/* Clinic Timings & Images */}
-            <div className="grid md:grid-cols-2 gap-6">
-              {clinics.map((clinic, index) => (
-                // Applying glass morphism here
-                <ClinicTimingCard key={index} clinic={clinic} />
-              ))}
-            </div>
-
-            {/* Main Contact Details */}
-            <div className={`bg-gray-50 p-6 rounded-2xl shadow-lg border-l-4 border-[${PRIMARY_COLOR}] transition-shadow duration-300 hover:shadow-xl`}>
-              <h3 className={`text-xl font-bold text-slate-900 mb-3 flex items-center`}>
-                <Phone className={`w-6 h-6 mr-3 text-[${PRIMARY_COLOR}]`} /> Get in Touch Directly
-              </h3>
-              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-8 text-lg font-medium">
-                <a href="tel:+918692072736" className={`text-gray-700 hover:text-[${PRIMARY_COLOR}] transition-colors duration-300`}>+91 86920 72736 (Primary)</a>
-                <a href="tel:+917304837528" className={`text-gray-700 hover:text-[${PRIMARY_COLOR}] transition-colors duration-300`}>+91 73048 37528 (Secondary)</a>
-              </div>
-            </div>
-
-          </div>
-
-          {/* Appointment/Form Sidebar */}
-          <div className={`lg:col-span-1 p-6 bg-[${PRIMARY_COLOR}] rounded-2xl shadow-2xl text-white h-full flex flex-col justify-between transition-shadow duration-300 hover:shadow-3xl`}>
-            <div>
-              <h3 className="text-2xl font-bold mb-4 font-['Poppins']">Need Quick Assistance?</h3>
-              <p className="text-gray-200 mb-6">For urgent queries or quick confirmations, WhatsApp is the fastest way to reach us.</p>
-            </div>
-            <div className="space-y-4">
-                <CTAButton icon={Calendar} style="accent" onClick={openModal}>
-                    Request Appointment
-                </CTAButton>
-                <CTAButton icon={Stethoscope} style="secondary" isLink={true} href="https://wa.me/918692072736" className="!bg-white !text-gray-800">
-                    Message on WhatsApp
-                </CTAButton>
-                <CTAButton icon={Mail} style="secondary" isLink={true} href="mailto:drjaydhadke@example.com?subject=Inquiry%20from%20Website" className="!bg-white !text-gray-800">
-                    Send an Email
-                </CTAButton>
-            </div>
-          </div>
+// Navigation Component
+const Navigation = ({ handleScrollTo, isMenuOpen, setIsMenuOpen, openModal }) => (
+    <header className="sticky top-0 z-50 bg-white/10 backdrop-blur-2xl shadow-3xl border-b border-white/50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+        <div className="flex items-center">
+          <h1 className="text-2xl font-extrabold font-rubik text-blue-700 cursor-pointer transition duration-300 hover:text-cyan-500" onClick={() => handleScrollTo('hero')}>
+            Dr. Jay R. Dhadke
+          </h1>
         </div>
-
-        {/* Google Maps Embeds */}
-        <h3 className="text-2xl font-bold text-slate-900 mb-6 pt-8 border-t border-gray-200 font-['Poppins']">
-          Locate Our Clinics
-        </h3>
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* Chembur Map */}
-          <div ref={refChembur} className="rounded-xl overflow-hidden shadow-xl border-4 border-white transition-shadow duration-300 hover:shadow-2xl">
-            <h4 className="p-3 bg-slate-800 text-white font-semibold">Jayraj Clinic — Chembur Location</h4>
-            <iframe
-              title="Chembur Clinic Map"
-              src={clinics[0].mapUrl}
-              width="100%"
-              height="300"
-              style={{ border: 0 }}
-              allowFullScreen=""
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
-          </div>
-
-          {/* Govandi Map */}
-          <div ref={refGovandi} className="rounded-xl overflow-hidden shadow-xl border-4 border-white transition-shadow duration-300 hover:shadow-2xl">
-            <h4 className="p-3 bg-slate-800 text-white font-semibold">Asha Nursing Home — Govandi Location</h4>
-            <iframe
-              title="Govandi Clinic Map"
-              src={clinics[1].mapUrl}
-              width="100%"
-              height="300"
-              style={{ border: 0 }}
-              allowFullScreen=""
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-
-// --- Floating Elements ---
-
-const FloatingButtons = ({ openModal }) => {
-    // Check if device is likely mobile for the Call button
-    const isMobile = window.innerWidth < 768;
-
-    return (
-        <>
-            {/* Floating WhatsApp Button (Bottom Right) - Matches Screenshot Icon */}
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex space-x-8">
+          {navItems.map((item) => (
             <a
-                href="https://wa.me/918692072736"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`fixed bottom-6 right-6 z-40 p-4 rounded-full bg-[${ACCENT_COLOR}] text-white shadow-2xl transition-all duration-300 hover:scale-105 transform active:scale-95`}
-                aria-label="WhatsApp Dr. Dhadke"
+              key={item}
+              href={`#${item.toLowerCase().replace('-', '')}`}
+              onClick={(e) => {
+                e.preventDefault();
+                handleScrollTo(item.toLowerCase().replace('-', ''));
+              }}
+              className="text-gray-700 hover:text-cyan-600 font-medium transition duration-300 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-gradient-to-r from-blue-500 to-cyan-400 hover:after:w-full after:transition-all after:duration-300"
             >
-                <svg className="w-7 h-7" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12.04 2C6.58 2 2.16 6.31 2 11.66 2.16 17 6.58 21.31 12.04 21.47l.03-.01V24h-.23c-5.5 0-9.98-4.43-10-9.87.02-5.46 4.5-9.87 10-9.87h.26v2.17H12.04C7.88 6.43 4.5 9.8 4.34 13.97c0 4.2 3.38 7.57 7.58 7.57h.03v-2.17H12.04c-3.1 0-5.63-2.48-5.63-5.5 0-3.03 2.53-5.51 5.63-5.51 3.1 0 5.63 2.48 5.63 5.5v.03h2.17v-.03c0-4.2-3.38-7.57-7.58-7.57zM17.76 13.7l-1.07-.63c-.15-.1-.3-.12-.47-.07-.15.06-.23.23-.23.36v.44c-.65.23-1.46.33-2.3.33-.84 0-1.65-.1-2.3-.33v-.44c0-.13-.08-.3-.23-.36-.17-.05-.32-.03-.47.07l-1.07.63c-.34.2-.4.65-.1.97.24.26.54.43.86.53 1.05.34 2.1.34 3.16 0 .32-.1.62-.27.86-.53.3-.32.24-.77-.1-.97z"/>
-                </svg>
+              {item === 'Video-T' ? 'Video Testimonials' : item}
             </a>
-        </>
-    );
-};
+          ))}
+        </nav>
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden text-gray-700 hover:text-blue-700"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle Menu"
+        >
+          {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="md:hidden absolute w-full bg-white/95 backdrop-blur-lg shadow-xl border-t border-gray-100 pb-2">
+          {navItems.map((item) => (
+            <a
+              key={item}
+              href={`#${item.toLowerCase().replace('-', '')}`}
+              onClick={(e) => {
+                e.preventDefault();
+                handleScrollTo(item.toLowerCase().replace('-', ''));
+                setIsMenuOpen(false);
+              }}
+              className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition duration-150 border-b border-gray-100 last:border-b-0 font-medium"
+            >
+              {item === 'Video-T' ? 'Video Testimonials' : item}
+            </a>
+          ))}
+          <div className="p-4">
+            <PrimaryButton
+              icon={CalendarCheck}
+              label="Book Appointment"
+              className="w-full"
+              onClick={() => {
+                openModal();
+                setIsMenuOpen(false);
+              }}
+            />
+          </div>
+        </div>
+      )}
+    </header>
+);
 
-// --- Footer Component ---
+// Hero Section Component
+const HeroSection = ({ openModal }) => (
+    <section id="hero" className="relative pt-20 pb-32 bg-gradient-to-br from-blue-50 to-white overflow-hidden">
+        {/* Decorative circles with custom animation for depth */}
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-cyan-300/20 rounded-full transform translate-x-1/2 -translate-y-1/2 blur-3xl opacity-70 pointer-events-none animate-bg-move"></div>
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-300/20 rounded-full transform -translate-x-1/2 translate-y-1/2 blur-3xl opacity-70 pointer-events-none animate-bg-move delay-500"></div>
 
-const Footer = () => {
-    return (
-        <footer className="bg-slate-900 text-white py-8 font-['Inter']">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center md:text-left">
-                <div className="grid md:grid-cols-4 gap-8 border-b border-slate-800 pb-6 mb-6">
-                    <div>
-                        <h4 className={`text-xl font-bold mb-3 text-[${ACCENT_COLOR}]`}>Dr. Jay R. Dhadke</h4>
-                        <p className="text-sm text-gray-400">
-                            Pediatrician | Neonatologist. Providing specialized, compassionate, evidence-based care in Mumbai.
-                        </p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
+            {/* Hero Content (Left) */}
+            <div className="relative z-10 text-center md:text-left animate-in fade-in slide-in-from-left-8 duration-700">
+                <p className="text-sm font-semibold text-blue-600 uppercase tracking-widest mb-3">
+                    MD Paediatrics | Neonatology PGP-N (Boston, USA)
+                </p>
+                <h2 className="text-5xl md:text-7xl font-extrabold font-rubik text-blue-900 leading-tight mb-4">
+                    Dr. Jay R. Dhadke
+                </h2>
+                <h3 className="text-2xl font-semibold font-rubik text-cyan-700 mb-6">
+                    NICU & PICU Child Specialist in Mumbai
+                </h3>
+                <p className="text-lg text-gray-700 mb-10 max-w-lg md:mx-0 mx-auto">
+                    Delivering precise, **evidence-based care** from the NICU to adolescence. Your child's health and future are safe in our hands.
+                </p>
+                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center md:justify-start">
+                    <div className="animate-pulse-once">
+                        <PrimaryButton icon={CalendarCheck} label="Book Appointment" onClick={openModal} />
                     </div>
-                    <div>
-                        <h4 className="text-lg font-semibold mb-3">Quick Links</h4>
-                        <ul className="space-y-2 text-sm">
-                            {['About', 'Services', 'Testimonials', 'Contact'].map(item => (
-                                <li key={item}>
-                                    <a href={`#${item.toLowerCase()}`} className="text-gray-400 hover:text-white transition-colors">
-                                        {item}
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 className="text-lg font-semibold mb-3">Contact</h4>
-                        <p className="text-sm text-gray-400 space-y-2">
-                            <a href="tel:+918692072736" className="block hover:text-white flex items-center"><Phone className="w-4 h-4 mr-2 inline" /> +91 86920 72736</a>
-                            <a href="mailto:drjaydhadke@example.com" className="block hover:text-white flex items-center"><Mail className="w-4 h-4 mr-2 inline" /> drjaydhadke@example.com</a>
-                            <span className="block pt-2">Mumbai, India</span>
-                        </p>
-                    </div>
-                    <div>
-                        <h4 className="text-lg font-semibold mb-3">Clinic Timings</h4>
-                        <p className="text-sm text-gray-400">
-                            **Chembur:** 10:30 AM – 1:00 PM & 7:00 PM – 9:30 PM<br/>
-                            **Govandi:** 1:00 PM – 3:00 PM & 4:00 PM – 7:00 PM
-                        </p>
-                        <p className="text-xs text-red-400 mt-2">Strictly by Appointment</p>
-                    </div>
-                </div>
-
-                <div className="text-sm text-gray-500 pt-4">
-                    &copy; {new Date().getFullYear()} Dr. Jay R. Dhadke. All Rights Reserved.
+                    <SecondaryButton
+                        icon={MessageCircle}
+                        label="WhatsApp Now"
+                        onClick={() => (window.location.href = 'https://wa.me/919876543210')}
+                    />
                 </div>
             </div>
-        </footer>
+
+            {/* Hero Image / Stats (Right) */}
+            <div className="relative mt-12 md:mt-0 animate-in fade-in slide-in-from-right-8 duration-700 delay-150 group">
+                <div
+                    className="doctor-image-placeholder w-full max-w-md h-[400px] lg:h-[500px] mx-auto bg-cover bg-center rounded-3xl shadow-4xl transform rotate-3 scale-90 transition-all duration-700 group-hover:rotate-0 group-hover:scale-100 border-8 border-white/90"
+                    style={{
+                        backgroundImage: `url('https://lh3.googleusercontent.com/p/AF1QipPUN2xOrHSyWPf-pU4R-0E8xnSRWbaH-iFZwvXb=s1360-w1360-h1020-rw')`,
+                        backgroundPosition: 'top center',
+                    }}
+                ></div>
+            </div>
+        </div>
+    </section>
+);
+
+// Metrics Bar Section (Scroll-Triggered Stats)
+const MetricsBarSection = () => (
+    <section id="metrics" className="py-12 bg-white/50 backdrop-blur-lg -mt-16 relative z-20 shadow-inner border-t border-b border-white/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+                <StatCard value="20+" label="Yrs Experience" icon={Clock} />
+                <StatCard value="2500+" label="Happy Families" icon={User} />
+                <StatCard value="30K+" label="Total Consults" icon={Stethoscope} />
+                <StatCard value="98%" label="Immunization Rate" icon={ShieldCheck} />
+                <StatCard value="Boston" label="Trained PGP-N" icon={Award} /> 
+            </div>
+        </div>
+    </section>
+);
+
+// About Section Component
+const AboutSection = ({ handleScrollTo }) => (
+    <section id="about" className="py-32 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+                <span className="inline-block text-sm font-bold text-blue-600 bg-blue-100 px-4 py-1 rounded-full uppercase tracking-widest">
+                    Our Commitment
+                </span>
+                <h2 className="mt-4 text-4xl lg:text-5xl font-extrabold font-rubik text-gray-900">
+                    A Trusted Hand in Child Health
+                </h2>
+            </div>
+            <div className="lg:grid lg:grid-cols-3 lg:gap-16 items-start">
+                <div className="lg:col-span-2 space-y-6 text-lg text-gray-600">
+                    <p>
+                        Dr. Jay Dhadke is a highly specialized Pediatrician committed to international standards of care. His qualifications include a prestigious **Post Graduate Program in Neonatology (PGP-N) from Boston, USA**, providing a foundation of cutting-edge, evidence-based pediatric practice.
+                    </p>
+                    <p>
+                        His expertise spans the entire childhood spectrum, specializing particularly in the care of newborns and critically ill children. He provides a holistic approach that prioritizes preventative care, developmental support, and compassionate communication with parents.
+                    </p>
+                    <p className="font-extrabold text-cyan-700 text-xl border-l-4 border-cyan-500 pl-4">
+                        "We don't just treat illnesses; we nurture potential. Every child deserves the highest standard of care from their first breath."
+                    </p>
+                    <PrimaryButton icon={ArrowRight} label="View Full Biography" className="mt-8" onClick={() => handleScrollTo('contact')} />
+                </div>
+                <div className="mt-12 lg:mt-0 lg:col-span-1 p-8 bg-blue-50 rounded-3xl shadow-xl border border-blue-200">
+                    <h3 className="text-xl font-bold font-rubik text-blue-800 mb-4 flex items-center"><Award className="w-5 h-5 mr-2 text-blue-500" /> Key Credentials</h3>
+                    <ul className="space-y-3 text-gray-700">
+                        <li className="flex items-start">
+                            <SquareDot className="w-5 h-5 text-cyan-500 mr-3 mt-1 flex-shrink-0" />
+                            <span>MD Paediatrics (Gold Medalist)</span>
+                        </li>
+                        <li className="flex items-start">
+                            <SquareDot className="w-5 h-5 text-cyan-500 mr-3 mt-1 flex-shrink-0" />
+                            <span>PGP-N Neonatology (Boston, USA)</span>
+                        </li>
+                        <li className="flex items-start">
+                            <SquareDot className="w-5 h-5 text-cyan-500 mr-3 mt-1 flex-shrink-0" />
+                            <span>FNNF & MNNF Certified Specialist</span>
+                        </li>
+                        <li className="flex items-start">
+                            <SquareDot className="w-5 h-5 text-cyan-500 mr-3 mt-1 flex-shrink-0" />
+                            <span>Experienced in PICU (Pediatric ICU) Management</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+);
+
+// Parallax Quote Section Component
+const ParallaxQuoteSection = () => (
+    <section className="parallax-bg bg-cover bg-center h-96 flex items-center justify-center relative">
+        <div className="absolute inset-0 bg-blue-900/70"></div>
+        
+        <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
+            <p className="text-3xl md:text-5xl font-extrabold font-rubik text-white leading-snug tracking-wide italic">
+                “Caring for a child is like giving wings to the future.”
+            </p>
+            <p className="mt-6 text-xl text-cyan-300 font-semibold">- Dr. Jay Dhadke's Philosophy</p>
+        </div>
+    </section>
+);
+
+// Services Section Component
+const ServicesSection = () => (
+    <section id="services" className="py-32 bg-gradient-to-br from-blue-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+                <span className="inline-block text-sm font-bold text-cyan-700 bg-cyan-100 px-4 py-1 rounded-full uppercase tracking-widest">
+                    Specialized Care
+                </span>
+                <h2 className="mt-4 text-4xl lg:text-5xl font-extrabold font-rubik text-gray-900">
+                    Our Signature Pediatric Services
+                </h2>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {services.map((service, index) => (
+                    <div
+                        key={index}
+                        className="bg-white/10 backdrop-blur-2xl p-8 rounded-3xl shadow-3xl transition duration-700 ease-in-out hover:shadow-4xl hover:scale-[1.05] hover:bg-white/30 border border-white/50 flex flex-col cursor-pointer group"
+                    >
+                        <service.icon className="w-10 h-10 text-cyan-600 mb-4 transform group-hover:rotate-6 transition duration-500" />
+                        <h3 className="text-xl font-bold font-rubik text-blue-900 mb-3">{service.title}</h3>
+                        <p className="text-gray-700 mt-auto">{service.description}</p>
+                    </div>
+                ))}
+            </div>
+        </div>
+    </section>
+);
+
+// Video Player Modal Component
+const VideoPlayerModal = ({ youtubeId, onClose }) => {
+    if (!youtubeId) return null;
+
+    // Use the specific YouTube embed URL for the iframe
+    const videoSrc = `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0`;
+
+    return (
+        <div 
+            className="fixed inset-0 z-[110] flex items-center justify-center p-4 transition-opacity duration-300 backdrop" 
+            onClick={onClose}
+        >
+            <div
+                className="bg-gray-900/90 backdrop-blur-xl p-4 rounded-xl shadow-4xl max-w-4xl w-full relative transform scale-100 transition-transform duration-500"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <button 
+                    onClick={onClose} 
+                    className="absolute -top-10 right-0 md:-right-10 text-white hover:text-red-500 transition duration-150 p-2 rounded-full bg-black/50"
+                    aria-label="Close video player"
+                >
+                    <X className="w-8 h-8" />
+                </button>
+                <div className="aspect-video w-full">
+                    <iframe
+                        className="w-full h-full rounded-lg"
+                        src={videoSrc}
+                        title="YouTube video player"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                    ></iframe>
+                </div>
+            </div>
+        </div>
     );
 };
 
+// Video Testimonials Section Component (DYNAMIC CAROUSEL APPLIED)
+const VideoTestimonialsSection = () => {
+    // State to track the currently active video index
+    const [activeIndex, setActiveIndex] = useState(0); 
+    // State to track which video is playing (by ID)
+    const [playingVideoId, setPlayingVideoId] = useState(null);
+    const carouselRef = useRef(null);
 
-// --- Main App Component ---
-
-const App = () => {
-  const [activeSection, setActiveSection] = useState('hero');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const sectionsRef = useRef({});
-
-  // Function to smoothly scroll to any section
-  const scrollToSection = useCallback((id) => {
-    const element = sectionsRef.current[id];
-    if (element) {
-      // Calculate offset for sticky header
-      const headerHeight = 70; // Approximation of header height
-      const y = element.getBoundingClientRect().top + window.scrollY - headerHeight;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-      setActiveSection(id);
-    }
-  }, []);
-
-  // Intersection Observer for highlighting the active section in the sticky header
-  useEffect(() => {
-    const observerOptions = {
-      root: null,
-      rootMargin: '-30% 0px -30% 0px', 
-      threshold: 0,
+    const goToNext = () => {
+        // Updated length check to include the new 5th video
+        setActiveIndex((prevIndex) => (prevIndex + 1) % videoTestimonials.length);
     };
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
+    const goToPrev = () => {
+        // Updated length check to include the new 5th video
+        setActiveIndex((prevIndex) => 
+            (prevIndex - 1 + videoTestimonials.length) % videoTestimonials.length
+        );
+    };
+
+    // Function to open the video player
+    const openVideo = (youtubeId) => {
+        setPlayingVideoId(youtubeId);
+    };
+
+    // Function to close the video player
+    const closeVideo = () => {
+        setPlayingVideoId(null);
+    };
+
+    // Effect to translate the carousel container when activeIndex changes
+    useEffect(() => {
+        if (carouselRef.current) {
+            // Define dimensions for responsive translation
+            const cardWidthLg = 400; // Corresponds to md:w-[400px]
+            const cardWidthSm = 300; // Corresponds to w-[300px]
+            const gap = 32; // Corresponds to gap-8 (2rem = 32px)
+            
+            // Get current screen width (proxy for responsive class)
+            // Use clientWidth if available, otherwise assume mobile width for safety.
+            const currentCardWidth = carouselRef.current.clientWidth > 767 ? cardWidthLg : cardWidthSm;
+            
+            // Calculate total offset to shift the carousel track
+            const offset = (currentCardWidth + gap) * activeIndex;
+            
+            carouselRef.current.style.transform = `translateX(-${offset}px)`;
         }
-      });
-    }, observerOptions);
+    }, [activeIndex]);
 
-    Object.values(sectionsRef.current).forEach(section => {
-      if (section) observer.observe(section);
-    });
+    return (
+        <section id="video-t" className="py-32 bg-white relative overflow-hidden">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-16">
+                    <span className="inline-block text-sm font-bold text-red-600 bg-red-100 px-4 py-1 rounded-full uppercase tracking-widest">
+                        Real Stories
+                    </span>
+                    <h2 className="mt-4 text-4xl lg:text-5xl font-extrabold font-rubik text-gray-900">
+                        Dynamic Video Success Casserole!
+                    </h2>
+                </div>
 
-    return () => {
-      Object.values(sectionsRef.current).forEach(section => {
-        if (section) observer.unobserve(section);
-      });
-    };
-  }, []);
+                {/* Carousel Container (Controls the visible window) */}
+                <div className="relative overflow-x-hidden py-4"> 
+                    
+                    {/* Inner Track (Scrollable/Translatable) */}
+                    <div 
+                        ref={carouselRef}
+                        className="flex transition-transform duration-700 ease-in-out gap-8 w-max"
+                        style={{ transform: `translateX(0)` }}
+                    >
+                        {videoTestimonials.map((video, index) => (
+                            <div 
+                                key={index} 
+                                onClick={() => openVideo(video.youtubeId)} // <-- Opens the video modal
+                                className={`video-card w-[300px] md:w-[400px] flex-shrink-0 bg-gray-50 p-4 rounded-xl shadow-lg transition duration-500 cursor-pointer group 
+                                    ${index === activeIndex ? 'scale-[1.03] shadow-4xl ring-4 ring-blue-500/50 bg-white' : 'opacity-80 hover:scale-[1.01]'}
+                                `}
+                            >
+                                <div className="aspect-video bg-gray-300 rounded-lg flex items-center justify-center mb-3 relative overflow-hidden">
+                                    
+                                    {/* YouTube Thumbnail Link */}
+                                    <img 
+                                        src={`https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`} // <-- Use YouTube's default thumbnail URL format
+                                        alt={`Video thumbnail for ${video.title}`}
+                                        className="absolute inset-0 w-full h-full object-cover"
+                                        onError={(e) => {
+                                            // Fallback for missing video IDs
+                                            e.target.onerror = null; 
+                                            e.target.src = `https://placehold.co/600x337/111827/F9FAFB?text=Video+ID+${index+1}`;
+                                        }}
+                                    />
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+                                    {/* Dark Overlay on Hover */}
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 transition duration-300 group-hover:bg-black/20">
+                                        {/* Custom, prominent Play Button */}
+                                        <div className="p-4 bg-white/80 rounded-full shadow-xl text-blue-700 transform transition-transform duration-300 group-hover:scale-110">
+                                            <Play className="w-8 h-8 fill-current" />
+                                        </div>
+                                    </div>
 
-  // Set the global font styles
-  useEffect(() => {
-    document.body.style.fontFamily = 'Inter, sans-serif';
-  }, []);
+                                    {/* Duration Tag */}
+                                    <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs font-semibold px-2 py-1 rounded-md">
+                                        {video.duration}
+                                    </div>
+                                </div>
+                                <p className="font-semibold text-gray-800 text-center">{video.title}</p>
+                            </div>
+                        ))}
+                    </div>
 
+                    {/* Navigation Buttons (Absolute Positioning) */}
+                    <button 
+                        onClick={goToPrev} 
+                        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-3 bg-blue-700/80 hover:bg-blue-700 text-white rounded-full transition-all shadow-xl disabled:opacity-50"
+                        aria-label="Previous testimonial"
+                        disabled={activeIndex === 0}
+                    >
+                        <ArrowLeft className="w-6 h-6" />
+                    </button>
+                    
+                    <button 
+                        onClick={goToNext} 
+                        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-3 bg-blue-700/80 hover:bg-blue-700 text-white rounded-full transition-all shadow-xl disabled:opacity-50"
+                        aria-label="Next testimonial"
+                        disabled={activeIndex === videoTestimonials.length - 1}
+                    >
+                        <ArrowRight className="w-6 h-6" />
+                    </button>
+                    
+                </div>
+                
+                {/* Dots Indicator */}
+                <div className="flex justify-center space-x-3 mt-12">
+                    {videoTestimonials.map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => setActiveIndex(index)}
+                            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                                index === activeIndex ? 'bg-blue-700 w-8' : 'bg-gray-300 hover:bg-gray-400'
+                            }`}
+                            aria-label={`Go to testimonial ${index + 1}`}
+                        />
+                    ))}
+                </div>
+
+            </div>
+            {/* Video Player Modal */}
+            <VideoPlayerModal youtubeId={playingVideoId} onClose={closeVideo} />
+        </section>
+    );
+};
+
+// Contact Section Component
+const ContactSection = ({ openModal }) => (
+    <section id="contact" className="py-32 bg-blue-800 relative overflow-hidden">
+        {/* Decorative circles for depth and movement */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-400/30 rounded-full transform -translate-x-1/2 -translate-y-1/2 blur-3xl opacity-40 pointer-events-none animate-bg-move"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="text-center mb-16">
+                <h2 className="text-4xl lg:text-5xl font-extrabold font-rubik text-white">
+                    Connect With Dr. Dhadke
+                </h2>
+                <p className="mt-4 text-xl text-blue-200">
+                    Book your slot immediately via the appointment form below.
+                </p>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-12 items-start">
+                {/* Clinic Timing Cards (Deep Glass Morphism) */}
+                <div className="space-y-8">
+                    <h3 className="text-2xl font-bold font-rubik text-white mb-4">Clinic Locations & Timings</h3>
+                    {clinics.map((clinic, index) => (
+                        <ClinicCard key={index} clinic={clinic} />
+                    ))}
+                </div>
+
+                {/* Contact Form CTA Panel (Glass Morphism) */}
+                <div className="bg-white/10 backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-4xl border border-white/50 h-full flex flex-col justify-center">
+                    <h3 className="text-3xl font-extrabold font-rubik text-white mb-4">Urgent Appointment?</h3>
+                    <p className="text-blue-100 mb-8 text-lg">
+                        For non-critical appointments, click below. For emergencies, please call the clinic directly or use WhatsApp.
+                    </p>
+                    <div className="space-y-4">
+                        <PrimaryButton icon={CalendarCheck} label="Open Appointment Form" className="w-full" onClick={openModal} />
+                        <SecondaryButton
+                            icon={Phone}
+                            label="Emergency Call: +91 98765 43210"
+                            className="w-full text-red-500 border-red-300 hover:bg-red-50"
+                            onClick={() => (window.location.href = 'tel:+919876543210')}
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+);
+
+// Mobile Contact Bar Component
+const MobileContactBar = ({ openModal }) => (
+  <div className="md:hidden fixed bottom-0 left-0 w-full z-40">
+    <div className="flex justify-around bg-blue-700/95 backdrop-blur-sm shadow-2xl p-3 border-t-4 border-cyan-400">
+      <a
+        href="tel:+919876543210"
+        className="flex flex-col items-center text-white text-xs font-semibold hover:text-cyan-300 transition duration-300"
+      >
+        <Phone className="w-6 h-6 mb-1 text-cyan-400" />
+        Call Now
+      </a>
+      <a
+        href="https://wa.me/919876543210"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex flex-col items-center text-white text-xs font-semibold hover:text-cyan-300 transition duration-300"
+      >
+        <MessageCircle className="w-6 h-6 mb-1 text-green-400" />
+        WhatsApp
+      </a>
+      <button
+        onClick={openModal}
+        className="flex flex-col items-center text-white text-xs font-semibold hover:text-cyan-300 transition duration-300"
+      >
+        <CalendarCheck className="w-6 h-6 mb-1 text-red-400" />
+        Appointment
+      </button>
+    </div>
+  </div>
+);
+
+// Footer Component
+const AppFooter = () => (
+    <footer className="bg-gray-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm border-t border-gray-700 pt-8">
+            <p>&copy; {new Date().getFullYear()} Dr. Jay R. Dhadke, MD, PGP-N (Boston). All Rights Reserved.</p>
+            <p className="mt-2 text-gray-400">Created By Sourav Patil - 7058591764</p>
+        </div>
+    </footer>
+);
+
+
+// --- MAIN APP COMPONENT ---
+const App = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isModalOpen, setIsModal] = useState(false);
+  const handleScrollTo = useScrollHandler();
+
+  const openModal = () => setIsModal(true);
+  const closeModal = () => setIsModal(false);
 
   return (
-    <div className={`min-h-screen bg-white`}> 
-      {/* Tailwind configuration and Custom CSS for Dynamism and Glassmorphism */}
-      <style>
-        {`
-          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Montserrat:wght@400;700;800&family=Inter:wght@300;400;600;700&display=swap');
-          html {
-            scroll-behavior: smooth;
-          }
-          .font-['Poppins'] { font-family: 'Poppins', sans-serif; }
-          .font-['Montserrat'] { font-family: 'Montserrat', sans-serif; }
-          .font-['Inter'] { font-family: 'Inter', sans-serif; }
-          
-          /* --- Soft, Dynamic Hero Gradient Background (Matching Image) --- */
-          .hero-soft-bg {
-            /* Very light blue gradient for the soft, airy look */
-            background: linear-gradient(135deg, ${NEUTRAL_LIGHT_BG}, #E0F7FF, #FFFFFF);
-            background-size: 300% 300%;
-            animation: light-shift 12s ease infinite;
-            position: relative;
-            z-index: 1; /* Ensure content is above the subtle pattern */
-          }
-          @keyframes light-shift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-          }
-          
-          /* Stethoscope pattern overlay for texture - a common medical web design element */
-          .hero-soft-bg::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 0L20 10L10 20L0 10zM50 0L60 10L50 20L40 10zM90 0L100 10L90 20L80 10zM10 40L20 50L10 60L0 50zM50 40L60 50L50 60L40 50zM90 40L100 50L90 60L80 50zM10 80L20 90L10 100L0 90zM50 80L60 90L50 100L40 90zM90 80L100 90L90 100L80 90z' fill='${PRIMARY_COLOR.replace('#', '%23')}' opacity='0.05'/%3E%3C/svg%3E");
-            opacity: 0.5;
-            z-index: 0;
-            pointer-events: none;
-          }
+    <div className="min-h-screen bg-gray-50 font-inter antialiased text-gray-800">
 
-          /* --- Glassmorphism Styles (Fluidity & Modern Aesthetic) --- */
-          .glass-morphism-modal {
-            background: rgba(13, 110, 253, 0.75); /* Primary color with transparency */
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.18);
-          }
+      {/* Custom Styles */}
+      <style>{`
+        /* IMPORTING NEW FONTS: Rubik for Display/Headers, Inter for Body/UI */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+        
+        .font-inter { 
+          font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+        }
+        .font-rubik { 
+          font-family: 'Rubik', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+        }
 
-          .glass-morphism-card {
-            background: rgba(255, 255, 255, 0.85); /* Very light background for contrast */
-            box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            border-radius: 18px;
-            transition: all 0.3s ease-in-out;
-          }
+        .backdrop {
+            background-color: rgba(0, 0, 0, 0.4);
+        }
 
-          .glass-morphism-card:hover {
-              background: rgba(255, 255, 255, 1);
-              box-shadow: 0 8px 25px 0 rgba(0, 0, 0, 0.12);
-          }
-          
-          .stat-card:hover {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            transform: translateY(-4px) scale(1.02);
-          }
-          
-          .doctor-image-placeholder {
-            border: 8px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-          }
-        `}
-      </style>
+        @keyframes pulse-once {
+            0% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(14, 165, 233, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
+        }
+        .animate-pulse-once {
+            animation: pulse-once 1.5s ease-out 1;
+        }
 
-      <Header activeSection={activeSection} scrollToSection={scrollToSection} />
+        @keyframes background-move {
+          0%, 100% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+          50% { transform: translate(-48%, -52%) rotate(5deg) scale(1.05); }
+        }
+        .animate-bg-move {
+          animation: background-move 20s infinite ease-in-out;
+        }
 
-      <main>
-        {/* Helper function to assign ref for IntersectionObserver */}
-        <div ref={el => sectionsRef.current.hero = el}><HeroSection openModal={openModal} scrollToSection={scrollToSection} /></div>
-        <div ref={el => sectionsRef.current.about = el}><AboutSection /></div>
-        <div ref={el => sectionsRef.current.services = el}><ServicesSection /></div>
-        <div ref={el => sectionsRef.current.testimonials = el}><TestimonialsSection /></div>
-        <div ref={el => sectionsRef.current.contact = el}><ContactSection openModal={openModal} /></div>
-      </main>
+        .shadow-3xl {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+        }
+        .shadow-4xl {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+        }
+        
+        @media (max-width: 767px) {
+            .mobile-padding-bottom {
+                /* Extra padding for the fixed mobile contact bar */
+                padding-bottom: 70px;
+            }
+        }
 
-      <Footer />
-      <FloatingButtons openModal={openModal} />
-      <AppointmentModal isOpen={isModalOpen} closeModal={closeModal} />
+        .parallax-bg {
+            background-image: url('https://wallpaperbat.com/img/599339-pediatric-medicine.jpg');
+            background-attachment: fixed;
+        }
+      `}</style>
+
+      {/* Navigation */}
+      <Navigation 
+        handleScrollTo={handleScrollTo} 
+        isMenuOpen={isMenuOpen} 
+        setIsMenuOpen={setIsMenuOpen} 
+        openModal={openModal} 
+      />
+      
+      {/* Main Content Wrapper (with mobile padding) */}
+      <div className="mobile-padding-bottom">
+        
+        {/* Hero Section */}
+        <HeroSection openModal={openModal} />
+
+        {/* Metrics Bar Section (Scroll-Triggered Stats) */}
+        <MetricsBarSection />
+
+        {/* About Section */}
+        <AboutSection handleScrollTo={handleScrollTo} />
+        
+        {/* Parallax Quote Section */}
+        <ParallaxQuoteSection />
+
+        {/* Services Section */}
+        <ServicesSection />
+
+        {/* Video Testimonials Section (The Casserole!) */}
+        <VideoTestimonialsSection />
+
+        {/* Contact & Timings Section */}
+        <ContactSection openModal={openModal} />
+      </div>
+
+      {/* Footer */}
+      <AppFooter />
+
+      {/* Appointment Modal (renders over everything) */}
+      <AppointmentModal isOpen={isModalOpen} onClose={closeModal} />
+
+      {/* Sticky Mobile Contact Bar */}
+      <MobileContactBar openModal={openModal} />
+
     </div>
   );
 };
