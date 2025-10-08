@@ -710,7 +710,7 @@ const ContactSection = ({ openModal }) => (
                         <PrimaryButton icon={CalendarCheck} label="Open Appointment Form" className="w-full" onClick={openModal} />
                         <SecondaryButton
                             icon={Phone}
-                            label="Emergency Call: +91 98765 43210"
+                            label="Emergency Call: +91 99208 22936"
                             className="w-full text-red-500 border-red-300 hover:bg-red-50"
                             onClick={() => (window.location.href = 'tel:+919876543210')}
                         />
@@ -733,7 +733,7 @@ const MobileContactBar = ({ openModal }) => (
         Call Now
       </a>
       <a
-        href="https://wa.me/919876543210"
+        href="https://wa.me/919920822936"
         target="_blank"
         rel="noopener noreferrer"
         className="flex flex-col items-center text-white text-xs font-semibold hover:text-cyan-300 transition duration-300"
