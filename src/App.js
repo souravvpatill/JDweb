@@ -712,7 +712,7 @@ const ContactSection = ({ openModal }) => (
                             icon={Phone}
                             label="Emergency Call: +91 99208 22936"
                             className="w-full text-red-500 border-red-300 hover:bg-red-50"
-                            onClick={() => (window.location.href = 'tel:+919876543210')}
+                            onClick={() => (window.location.href = 'tel:+919920822936')}
                         />
                     </div>
                 </div>
@@ -726,7 +726,7 @@ const MobileContactBar = ({ openModal }) => (
   <div className="md:hidden fixed bottom-0 left-0 w-full z-40">
     <div className="flex justify-around bg-blue-700/95 backdrop-blur-sm shadow-2xl p-3 border-t-4 border-cyan-400">
       <a
-        href="tel:+919876543210"
+        href="tel:+919920822936"
         className="flex flex-col items-center text-white text-xs font-semibold hover:text-cyan-300 transition duration-300"
       >
         <Phone className="w-6 h-6 mb-1 text-cyan-400" />
