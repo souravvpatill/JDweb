@@ -358,7 +358,7 @@ const HeroSection = ({ openModal }) => (
                     <SecondaryButton
                         icon={MessageCircle}
                         label="WhatsApp Now"
-                        onClick={() => (window.location.href = 'https://wa.me/919876543210')}
+                        onClick={() => (window.location.href = 'https://wa.me/919920822936')}
                     />
                 </div>
             </div>
