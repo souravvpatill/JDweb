@@ -268,7 +268,7 @@ const Navigation = ({ handleScrollTo, isMenuOpen, setIsMenuOpen, openModal }) =>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <div className="flex items-center">
           <h1 className="text-2xl font-extrabold font-rubik text-blue-700 cursor-pointer transition duration-300 hover:text-cyan-500" onClick={() => handleScrollTo('hero')}>
-            Dr. Jay R. Dhadke
+            Dr. Sourav N. Patil
           </h1>
         </div>
         {/* Desktop Nav */}
@@ -684,7 +684,7 @@ const ContactSection = ({ openModal }) => (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center mb-16">
                 <h2 className="text-4xl lg:text-5xl font-extrabold font-rubik text-white">
-                    Connect With Dr. Dhadke
+                    Connect With Dr. Patil
                 </h2>
                 <p className="mt-4 text-xl text-blue-200">
                     Book your slot immediately via the appointment form below.
