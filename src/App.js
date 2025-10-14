@@ -368,7 +368,7 @@ const HeroSection = ({ openModal }) => (
                 <div
                     className="doctor-image-placeholder w-full max-w-md h-[400px] lg:h-[500px] mx-auto bg-cover bg-center rounded-3xl shadow-4xl transform rotate-3 scale-90 transition-all duration-700 group-hover:rotate-0 group-hover:scale-100 border-8 border-white/90"
                     style={{
-                        backgroundImage: `url('https://lh3.googleusercontent.com/p/AF1QipPUN2xOrHSyWPf-pU4R-0E8xnSRWbaH-iFZwvXb=s1360-w1360-h1020-rw')`,
+                        backgroundImage: `url('https://static.vecteezy.com/system/resources/previews/025/027/369/original/male-doctor-uniform-cartoon-character-pointing-at-empty-space-for-medical-healthcare-presentation-free-png.png')`,
                         backgroundPosition: 'top center',
                     }}
                 ></div>
@@ -756,7 +756,7 @@ const MobileContactBar = ({ openModal }) => (
 const AppFooter = () => (
     <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm border-t border-gray-700 pt-8">
-            <p>&copy; {new Date().getFullYear()} Dr. Jay R. Dhadke, MD, PGP-N (Boston). All Rights Reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Dr. Sourav Patil, MD, PGP-N (Boston). All Rights Reserved.</p>
             <p className="mt-2 text-gray-400">Created By Sourav Patil - 7058591764</p>
         </div>
     </footer>
