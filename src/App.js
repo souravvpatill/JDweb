@@ -343,7 +343,7 @@ const HeroSection = ({ openModal }) => (
                     MD Paediatrics | Neonatology PGP-N (Boston, USA)
                 </p>
                 <h2 className="text-5xl md:text-7xl font-extrabold font-rubik text-blue-900 leading-tight mb-4">
-                    Dr. Jay R. Dhadke
+                    Dr. Sourav Patil
                 </h2>
                 <h3 className="text-2xl font-semibold font-rubik text-cyan-700 mb-6">
                     NICU & PICU Child Specialist in Mumbai
@@ -407,7 +407,7 @@ const AboutSection = ({ handleScrollTo }) => (
             <div className="lg:grid lg:grid-cols-3 lg:gap-16 items-start">
                 <div className="lg:col-span-2 space-y-6 text-lg text-gray-600">
                     <p>
-                        Dr. Jay Dhadke is a highly specialized Pediatrician committed to international standards of care. His qualifications include a prestigious **Post Graduate Program in Neonatology (PGP-N) from Boston, USA**, providing a foundation of cutting-edge, evidence-based pediatric practice.
+                        Dr. Sourav Patil is a highly specialized Pediatrician committed to international standards of care. His qualifications include a prestigious **Post Graduate Program in Neonatology (PGP-N) from Boston, USA**, providing a foundation of cutting-edge, evidence-based pediatric practice.
                     </p>
                     <p>
                         His expertise spans the entire childhood spectrum, specializing particularly in the care of newborns and critically ill children. He provides a holistic approach that prioritizes preventative care, developmental support, and compassionate communication with parents.
@@ -452,7 +452,7 @@ const ParallaxQuoteSection = () => (
             <p className="text-3xl md:text-5xl font-extrabold font-rubik text-white leading-snug tracking-wide italic">
                 “Caring for a child is like giving wings to the future.”
             </p>
-            <p className="mt-6 text-xl text-cyan-300 font-semibold">- Dr. Jay Dhadke's Philosophy</p>
+            <p className="mt-6 text-xl text-cyan-300 font-semibold">- Dr. Sourav Patil's Philosophy</p>
         </div>
     </section>
 );
