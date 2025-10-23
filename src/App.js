@@ -30,14 +30,14 @@ const videoTestimonials = [
 const clinics = [
   { 
     name: 'Jayraj Clinic - Chembur', 
-    address: 'Plot No. 29, L-373, Galsenkar Colony, Near Jafar School, Govandi, Mumbai - 400043', 
+    address: 'Gemini Building, Road No -02, Near Mohan Gas, Pestom Sagar, Chembur West-400089', 
     morning: '10:30 AM - 1:00 PM', 
     evening: '7:00 PM - 9:30 PM',
     imageUrl: 'https://lh3.googleusercontent.com/p/AF1QipPY7W12UT2ZZwVmq6nREyQxKpx6WaP4aXwkg5xW=s1360-w1360-h1020-rw'
   },
   { 
     name: 'Asha Nursing Home - Govandi', 
-    address: 'Interior View, 1st Floor, Next to XYZ Bank, Govandi East, Mumbai - 400088', 
+    address: 'Plot No. 29, L-373, Galsenkar Colony, Near Jafar School, Govandi, Mumbai - 400043', 
     morning: '1:00 PM - 3:00 PM', 
     evening: '4:00 PM - 7:00 PM',
     imageUrl: 'https://lh3.googleusercontent.com/p/AF1QipPyLt53PQ_zLaTROH5uMdB3aoONnuPa6F0dg8A=w1200-h969-p-k-no'
@@ -268,7 +268,7 @@ const Navigation = ({ handleScrollTo, isMenuOpen, setIsMenuOpen, openModal }) =>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <div className="flex items-center">
           <h1 className="text-2xl font-extrabold font-rubik text-blue-700 cursor-pointer transition duration-300 hover:text-cyan-500" onClick={() => handleScrollTo('hero')}>
-            Dr. Sourav N. Patil
+            Dr. Jay N. Dhadke
           </h1>
         </div>
         {/* Desktop Nav */}
@@ -343,7 +343,7 @@ const HeroSection = ({ openModal }) => (
                     MD Paediatrics | Neonatology PGP-N (Boston, USA)
                 </p>
                 <h2 className="text-5xl md:text-7xl font-extrabold font-rubik text-blue-900 leading-tight mb-4">
-                    Dr. Sourav Patil
+                    Dr. Jay Dhadke
                 </h2>
                 <h3 className="text-2xl font-semibold font-rubik text-cyan-700 mb-6">
                     NICU & PICU Child Specialist in Mumbai
@@ -368,7 +368,7 @@ const HeroSection = ({ openModal }) => (
                 <div
                     className="doctor-image-placeholder w-full max-w-md h-[400px] lg:h-[500px] mx-auto bg-cover bg-center rounded-3xl shadow-4xl transform rotate-3 scale-90 transition-all duration-700 group-hover:rotate-0 group-hover:scale-100 border-8 border-white/90"
                     style={{
-                        backgroundImage: `url('https://static.vecteezy.com/system/resources/previews/025/027/369/original/male-doctor-uniform-cartoon-character-pointing-at-empty-space-for-medical-healthcare-presentation-free-png.png')`,
+                        backgroundImage: `url(https://tse4.mm.bing.net/th/id/OIP.d8nIFR5y9Qdkf1mtBDfCQQHaI0?pid=Api&P=0&h=180)`,
                         backgroundPosition: 'top center',
                     }}
                 ></div>
@@ -407,7 +407,7 @@ const AboutSection = ({ handleScrollTo }) => (
             <div className="lg:grid lg:grid-cols-3 lg:gap-16 items-start">
                 <div className="lg:col-span-2 space-y-6 text-lg text-gray-600">
                     <p>
-                        Dr. Sourav Patil is a highly specialized Pediatrician committed to international standards of care. His qualifications include a prestigious **Post Graduate Program in Neonatology (PGP-N) from Boston, USA**, providing a foundation of cutting-edge, evidence-based pediatric practice.
+                        Dr. Jay Dhadke is a highly specialized Pediatrician committed to international standards of care. His qualifications include a prestigious **Post Graduate Program in Neonatology (PGP-N) from Boston, USA**, providing a foundation of cutting-edge, evidence-based pediatric practice.
                     </p>
                     <p>
                         His expertise spans the entire childhood spectrum, specializing particularly in the care of newborns and critically ill children. He provides a holistic approach that prioritizes preventative care, developmental support, and compassionate communication with parents.
@@ -452,7 +452,7 @@ const ParallaxQuoteSection = () => (
             <p className="text-3xl md:text-5xl font-extrabold font-rubik text-white leading-snug tracking-wide italic">
                 “Caring for a child is like giving wings to the future.”
             </p>
-            <p className="mt-6 text-xl text-cyan-300 font-semibold">- Dr. Sourav Patil's Philosophy</p>
+            <p className="mt-6 text-xl text-cyan-300 font-semibold">- Dr. Jay Dhadke's Philosophy</p>
         </div>
     </section>
 );
@@ -684,7 +684,7 @@ const ContactSection = ({ openModal }) => (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center mb-16">
                 <h2 className="text-4xl lg:text-5xl font-extrabold font-rubik text-white">
-                    Connect With Dr. Patil
+                    Connect With Dr. Dhadke
                 </h2>
                 <p className="mt-4 text-xl text-blue-200">
                     Book your slot immediately via the appointment form below.
@@ -756,8 +756,8 @@ const MobileContactBar = ({ openModal }) => (
 const AppFooter = () => (
     <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm border-t border-gray-700 pt-8">
-            <p>&copy; {new Date().getFullYear()} Dr. Sourav Patil, MD, PGP-N (Boston). All Rights Reserved.</p>
-            <p className="mt-2 text-gray-400">Created By Sourav Patil - 7058591764</p>
+            <p>&copy; {new Date().getFullYear()} Dr. Jay Dhadke, MD, PGP-N (Boston). All Rights Reserved.</p>
+            <p className="mt-2 text-gray-400">Created By Jay Dhadke - 7058591764</p>
         </div>
     </footer>
 );
