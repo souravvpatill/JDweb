@@ -268,7 +268,7 @@ const Navigation = ({ handleScrollTo, isMenuOpen, setIsMenuOpen, openModal }) =>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <div className="flex items-center">
           <h1 className="text-2xl font-extrabold font-rubik text-blue-700 cursor-pointer transition duration-300 hover:text-cyan-500" onClick={() => handleScrollTo('hero')}>
-            Dr. Jay N. Dhadke
+            Dr. Jay R. Dhadke
           </h1>
         </div>
         {/* Desktop Nav */}
@@ -368,7 +368,7 @@ const HeroSection = ({ openModal }) => (
                 <div
                     className="doctor-image-placeholder w-full max-w-md h-[400px] lg:h-[500px] mx-auto bg-cover bg-center rounded-3xl shadow-4xl transform rotate-3 scale-90 transition-all duration-700 group-hover:rotate-0 group-hover:scale-100 border-8 border-white/90"
                     style={{
-                        backgroundImage: `url(https://tse4.mm.bing.net/th/id/OIP.d8nIFR5y9Qdkf1mtBDfCQQHaI0?pid=Api&P=0&h=180)`,
+                        backgroundImage: `(https://tse4.mm.bing.net/th/id/OIP.d8nIFR5y9Qdkf1mtBDfCQQHaI0?pid=Api&P=0&h=180)`,
                         backgroundPosition: 'top center',
                     }}
                 ></div>
