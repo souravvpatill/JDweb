@@ -368,7 +368,7 @@ const HeroSection = ({ openModal }) => (
                 <div
                     className="doctor-image-placeholder w-full max-w-md h-[400px] lg:h-[500px] mx-auto bg-cover bg-center rounded-3xl shadow-4xl transform rotate-3 scale-90 transition-all duration-700 group-hover:rotate-0 group-hover:scale-100 border-8 border-white/90"
                     style={{
-                        backgroundImage: `url\(https://pub-141831e61e69445289222976a15b6fb3.r2.dev/Image_to_url_V2/Screenshot-2025-12-30-134259-imagetourl.cloud-1767082493001-9ngfoo.png)`,
+                        backgroundImage: `url\(https://pub-141831e61e69445289222976a15b6fb3.r2.dev/Image_to_url_V2/jdp-imagetourl.cloud-1767084125101-g5kpn4.jpg)`,
                         backgroundPosition: 'top center',
                     }}
                 ></div>
