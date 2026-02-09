@@ -368,7 +368,7 @@ const HeroSection = ({ openModal }) => (
                 <div
                     className="doctor-image-placeholder w-full max-w-md h-[400px] lg:h-[500px] mx-auto bg-cover bg-center rounded-3xl shadow-4xl transform rotate-3 scale-90 transition-all duration-700 group-hover:rotate-0 group-hover:scale-100 border-8 border-white/90"
                     style={{
-                        backgroundImage: `url\(https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.bajajfinservhealth.in%2Fdoctor%2Fmumbai%2Fpaediatrician%2Fdr-jay-dhadke&psig=AOvVaw1MuLUzo73EKNPLgh5cca-w&ust=1770725425666000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCND1i7WwzJIDFQAAAAAdAAAAABAE)`,
+                        backgroundImage: `url(/resources/jdp.jpg)`,
                         backgroundPosition: 'top center',
                     }}
                 ></div>
