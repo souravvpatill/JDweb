@@ -100,7 +100,7 @@ const StatCard = ({ value, label, icon: Icon }) => {
   
   const numericPart = value.toString().replace(/[^0-9.]/g, '');
   const isStaticValue = numericPart.length === 0;
-
+// eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (isStaticValue) {
         setHasCounted(true);
@@ -123,16 +123,16 @@ const StatCard = ({ value, label, icon: Icon }) => {
       }
     );
 
-const node = statRef.current;
+    const node = statRef.current;
 
-if (node) {
-  observer.observe(node);
-}
+      if (node) {
+        observer.observe(node);
+      }
 
-return () => {
-  if (node) {
-    observer.unobserve(node);
-  }
+      return () => {
+        if (node) {
+          observer.unobserve(node);
+        }
 };
 
   }, [hasCounted, isStaticValue]);
