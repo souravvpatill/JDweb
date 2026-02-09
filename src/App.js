@@ -358,7 +358,7 @@ const HeroSection = ({ openModal }) => (
                     <SecondaryButton
                         icon={MessageCircle}
                         label="WhatsApp Now"
-                        onClick={() => (window.location.href = 'https://wa.me/919920822936')}
+                        onClick={() => (window.location.href = 'https://wa.me/918692072736')}
                     />
                 </div>
             </div>
@@ -368,7 +368,7 @@ const HeroSection = ({ openModal }) => (
                 <div
                     className="doctor-image-placeholder w-full max-w-md h-[400px] lg:h-[500px] mx-auto bg-cover bg-center rounded-3xl shadow-4xl transform rotate-3 scale-90 transition-all duration-700 group-hover:rotate-0 group-hover:scale-100 border-8 border-white/90"
                     style={{
-                        backgroundImage: `url\(https://pub-141831e61e69445289222976a15b6fb3.r2.dev/Image_to_url_V2/jdp-imagetourl.cloud-1767084125101-g5kpn4.jpg)`,
+                        backgroundImage: `url\(https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.bajajfinservhealth.in%2Fdoctor%2Fmumbai%2Fpaediatrician%2Fdr-jay-dhadke&psig=AOvVaw1MuLUzo73EKNPLgh5cca-w&ust=1770725425666000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCND1i7WwzJIDFQAAAAAdAAAAABAE)`,
                         backgroundPosition: 'top center',
                     }}
                 ></div>
@@ -712,7 +712,7 @@ const ContactSection = ({ openModal }) => (
                             icon={Phone}
                             label="Emergency Call: +91 99208 22936"
                             className="w-full text-red-500 border-red-300 hover:bg-red-50"
-                            onClick={() => (window.location.href = 'tel:+919920822936')}
+                            onClick={() => (window.location.href = 'tel:+918692072736')}
                         />
                     </div>
                 </div>
@@ -726,14 +726,14 @@ const MobileContactBar = ({ openModal }) => (
   <div className="md:hidden fixed bottom-0 left-0 w-full z-40">
     <div className="flex justify-around bg-blue-700/95 backdrop-blur-sm shadow-2xl p-3 border-t-4 border-cyan-400">
       <a
-        href="tel:+919920822936"
+        href="tel:+918692072736"
         className="flex flex-col items-center text-white text-xs font-semibold hover:text-cyan-300 transition duration-300"
       >
         <Phone className="w-6 h-6 mb-1 text-cyan-400" />
         Call Now
       </a>
       <a
-        href="https://wa.me/919920822936"
+        href="https://wa.me/918692072736"
         target="_blank"
         rel="noopener noreferrer"
         className="flex flex-col items-center text-white text-xs font-semibold hover:text-cyan-300 transition duration-300"
