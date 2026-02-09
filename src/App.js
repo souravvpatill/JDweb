@@ -123,15 +123,18 @@ const StatCard = ({ value, label, icon: Icon }) => {
       }
     );
 
-    if (statRef.current) {
-      observer.observe(statRef.current);
-    }
+const node = statRef.current;
 
-    return () => {
-      if (statRef.current) {
-        observer.unobserve(statRef.current);
-      }
-    };
+if (node) {
+  observer.observe(node);
+}
+
+return () => {
+  if (node) {
+    observer.unobserve(node);
+  }
+};
+
   }, [hasCounted, isStaticValue]);
 
   const defaultDisplay = value.toString().includes('%') ? '0%' : '0+';
